@@ -35,9 +35,9 @@ Promise.all([
     const userList = data[0].results;
     createCards(userList);
 
-    // TODO Create click events, like this?
-    // const cards = document.querySelectorAll('.card');
-    // cards.forEach(card => card.addEventListener('click', console.log('card clicked')));
+    // Set click event listener on each card
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => card.addEventListener('click', event => console.log('card clicked')));
 });
 
 /**
