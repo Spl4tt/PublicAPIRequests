@@ -37,7 +37,33 @@ Promise.all([
 
     // Set click event listener on each card
     const cards = document.querySelectorAll('.card');
-    cards.forEach(card => card.addEventListener('click', event => console.log('card clicked')));
+
+    function showModalWindow(event) {
+        let element = event.target;
+        while(element.className !== 'card') {
+            element = element.parentElement;
+        }
+        const user = userList[element.id];
+        const modalHTML = `<div class="modal-container">
+                                <div class="modal">
+                                    <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+                                    <div class="modal-info-container">
+                                        <img class="modal-img" src="${user.picture.large}" alt="profile picture">
+                                        <h3 id="name" class="modal-name cap">${user.name.first} ${user.name.last}</h3>
+                                        <p class="modal-text">${user.email}</p>
+                                        <p class="modal-text cap">${user.location.city}</p>
+                                        <hr>
+                                        <p class="modal-text">${user.number}</p>
+                                        <p class="modal-text">${user.location.street.number} ${user.location.street.name}, ${user.location.state}, ${user.location.postcode}</p>
+                                        <p class="modal-text">Birthday: ${user.dob.date}</p>
+                                    </div>
+                                </div>
+                            </div>`;
+
+        body.insertAdjacentHTML('beforeend', modalHTML)
+    }
+
+    cards.forEach(card => card.addEventListener('click', event => showModalWindow(event)));
 });
 
 /**
@@ -46,15 +72,18 @@ Promise.all([
  */
 function createCards(userList) {
     // Loop through the list of users and create a card in the gallery for each of them
-    userList.forEach(user => gallery.insertAdjacentHTML('beforeend', createCardLiteral(user)));
+    // userList.forEach(user => gallery.insertAdjacentHTML('beforeend', createCardLiteral(user)));
+    for(let i = 0; i<userList.length; i++) {
+        gallery.insertAdjacentHTML('beforeend', createCardLiteral(userList[i], i))
+    }
 }
 
 /**
  * Creates a template literal for the Card with basic user information
  * @param user
  */
-function createCardLiteral(user) {
-    return`<div class="card">
+function createCardLiteral(user, id) {
+    return`<div class="card" id="${id}">
                 <div class="card-img-container">
                     <img class="card-img" src="${user.picture.large}" alt="profile picture">
                 </div>
