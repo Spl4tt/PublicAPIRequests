@@ -44,7 +44,7 @@ Promise.all([
             element = element.parentElement;
         }
         const user = userList[element.id];
-        const modalHTML = `<div class="modal-container">
+        const modalHTML = `<div class="modal-container" id="modal">
                                 <div class="modal">
                                     <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
                                     <div class="modal-info-container">
@@ -59,8 +59,12 @@ Promise.all([
                                     </div>
                                 </div>
                             </div>`;
-
         body.insertAdjacentHTML('beforeend', modalHTML)
+
+        // Add close button listener
+        const modal = document.getElementById('modal');
+        const closeButton = document.getElementById('modal-close-btn');
+        closeButton.addEventListener('click', event => modal.parentNode.removeChild(modal));
     }
 
     cards.forEach(card => card.addEventListener('click', event => showModalWindow(event)));
