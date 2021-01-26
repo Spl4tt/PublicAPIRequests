@@ -33,6 +33,7 @@ Promise.all([
 ])
 .then(data => {
     const userList = data[0].results;
+    console.log(userList); // TODO Remove
     createCards(userList);
 
     // Set click event listener on each card
@@ -43,7 +44,22 @@ Promise.all([
         while(element.className !== 'card') {
             element = element.parentElement;
         }
+        // Get a User from list
         const user = userList[element.id];
+
+        // Format number to (555) 555-5555
+        let number = user.cell;
+        const cleaned = ('' + user.phone).replace(/\D/g, '') // Clean number
+        const regex = /^(\d{3})(\d{3})(\d{4})$/;
+        const match = cleaned.match(regex)
+        if (match) {
+            number = '(' + match[1] + ') ' + match[2] + '-' + match[3];
+        }
+
+        // Format Birthday
+        const birthday = new Date(user.dob.date).toLocaleDateString();
+
+        // Add HTML
         const modalHTML = `<div class="modal-container" id="modal">
                                 <div class="modal">
                                     <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
@@ -53,9 +69,9 @@ Promise.all([
                                         <p class="modal-text">${user.email}</p>
                                         <p class="modal-text cap">${user.location.city}</p>
                                         <hr>
-                                        <p class="modal-text">${user.number}</p>
+                                        <p class="modal-text">${number}</p>
                                         <p class="modal-text">${user.location.street.number} ${user.location.street.name}, ${user.location.state}, ${user.location.postcode}</p>
-                                        <p class="modal-text">Birthday: ${user.dob.date}</p>
+                                        <p class="modal-text">Birthday: ${birthday}</p>
                                     </div>
                                 </div>
                             </div>`;
