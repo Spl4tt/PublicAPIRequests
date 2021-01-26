@@ -1,6 +1,8 @@
 // Declarations
 const gallery = document.getElementById('gallery');
 const body = document.querySelector('body');
+
+createSearch();
 /**
  * Error checker
  * @param response
@@ -29,7 +31,8 @@ function fetchData(url) {
 
 // Fetch everything
 Promise.all([
-    fetchData('https://randomuser.me/api/?results=12')
+    //au,br,ca,ch,de,dk,es,fi,fr,gb,ie,ir,no,nl,nz,tr,us')
+    fetchData('https://randomuser.me/api/?results=12&nat=au,ch,de,fi,fr,gb,no,nl,nz,us')
 ])
 .then(data => {
     const userList = data[0].results;
@@ -103,7 +106,7 @@ function createCards(userList) {
  * @param user
  */
 function createCardLiteral(user, id) {
-    return`<div class="card" id="${id}">
+    return `<div class="card" id="${id}">
                 <div class="card-img-container">
                     <img class="card-img" src="${user.picture.large}" alt="profile picture">
                 </div>
@@ -113,4 +116,16 @@ function createCardLiteral(user, id) {
                     <p class="card-text cap">${user.location.city}, ${user.location.state}</p>
                 </div>
             </div>`;
+}
+
+function createSearch() {
+    const searchDiv = document.querySelector('.search-container');
+    const searchHTML = `<form action="#" method="get">
+                            <input type="search" id="search-input" className="search-input" placeholder="Search...">
+                            <input type="submit" value="&#x1F50D;" id="search-submit" className="search-submit">
+                        </form>`;
+    searchDiv.insertAdjacentHTML('beforeend', searchHTML);
+
+    // TODO: Add Eventlistener for each input, hide cards
+
 }
