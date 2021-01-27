@@ -2,7 +2,6 @@
 const gallery = document.getElementById('gallery');
 const body = document.querySelector('body');
 
-createSearch();
 /**
  * Error checker
  * @param response
@@ -87,6 +86,9 @@ Promise.all([
     }
 
     cards.forEach(card => card.addEventListener('click', event => showModalWindow(event)));
+
+    // Create Search with all needet functionality
+    createSearch();
 });
 
 /**
@@ -119,13 +121,26 @@ function createCardLiteral(user, id) {
 }
 
 function createSearch() {
+    const cards = document.querySelectorAll('.card');
     const searchDiv = document.querySelector('.search-container');
     const searchHTML = `<form action="#" method="get">
                             <input type="search" id="search-input" className="search-input" placeholder="Search...">
                             <input type="submit" value="&#x1F50D;" id="search-submit" className="search-submit">
                         </form>`;
     searchDiv.insertAdjacentHTML('beforeend', searchHTML);
+    const input = document.getElementById('search-input');
 
-    // TODO: Add Eventlistener for each input, hide cards
-
+    input.addEventListener('keyup', event => {
+        cards.forEach(card => {
+            const name = card.querySelector('#name').textContent.toLowerCase();
+            const searchString = event.target.value.toLowerCase();
+            // If it does not match, hide the card
+            if(name.includes(searchString)) {
+                card.style.display = 'block';
+            }
+            else {
+                card.style.display = 'none';
+            }
+        });
+    })
 }
