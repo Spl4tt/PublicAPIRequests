@@ -31,65 +31,106 @@ function fetchData(url) {
 // Fetch everything
 Promise.all([
     //au,br,ca,ch,de,dk,es,fi,fr,gb,ie,ir,no,nl,nz,tr,us')
-    fetchData('https://randomuser.me/api/?results=12&nat=au,ch,de,fi,fr,gb,no,nl,nz,us')
+    fetchData('https://randomuser.me/api/?results=12&nat=au,ch,de,fi,fr,gb,nl,nz,us')
 ])
 .then(data => {
     const userList = data[0].results;
     console.log(userList); // TODO Remove
     createCards(userList);
 
-    // Set click event listener on each card
     const cards = document.querySelectorAll('.card');
-
-    function showModalWindow(event) {
+    cards.forEach(card => card.addEventListener('click', event => {
+        // Getting the clicked user:
+        // Go up to the card element - Else we're on the wrong element
         let element = event.target;
         while(element.className !== 'card') {
             element = element.parentElement;
         }
         // Get a User from list
-        const user = userList[element.id];
+        const userId = element.id;
+        const user = userList[userId-1];
+        refreshModal(user, userId, userList.length);
+    }));
 
-        // Format number to (555) 555-5555
-        let number = user.cell;
-        const cleaned = ('' + user.phone).replace(/\D/g, '') // Clean number
-        const regex = /^(\d{3})(\d{3})(\d{4})$/;
-        const match = cleaned.match(regex)
-        if (match) {
-            number = '(' + match[1] + ') ' + match[2] + '-' + match[3];
-        }
-
-        // Format Birthday
-        const birthday = new Date(user.dob.date).toLocaleDateString();
-
-        // Add HTML
-        const modalHTML = `<div class="modal-container" id="modal">
-                                <div class="modal">
-                                    <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-                                    <div class="modal-info-container">
-                                        <img class="modal-img" src="${user.picture.large}" alt="profile picture">
-                                        <h3 id="name" class="modal-name cap">${user.name.first} ${user.name.last}</h3>
-                                        <p class="modal-text">${user.email}</p>
-                                        <p class="modal-text cap">${user.location.city}</p>
-                                        <hr>
-                                        <p class="modal-text">${number}</p>
-                                        <p class="modal-text">${user.location.street.number} ${user.location.street.name}, ${user.location.state}, ${user.location.postcode}</p>
-                                        <p class="modal-text">Birthday: ${birthday}</p>
-                                    </div>
-                                </div>
-                            </div>`;
-        body.insertAdjacentHTML('beforeend', modalHTML)
-
-        // Add close button listener
-        const modal = document.getElementById('modal');
-        const closeButton = document.getElementById('modal-close-btn');
-        closeButton.addEventListener('click', event => modal.parentNode.removeChild(modal));
-    }
-
-    cards.forEach(card => card.addEventListener('click', event => showModalWindow(event)));
-
-    // Create Search with all needet functionality
+    // Create Search with all needed functionality
     createSearch();
 });
+
+/**
+ * Removes the modal, and refreshes it with new values
+ * @param user
+ * @param currentUserId
+ * @param userCount
+ */
+function refreshModal(user, currentUserId, userCount) {
+    removeModal();
+
+    // Format number to (555) 555-5555
+    let number = user.cell;
+    const cleaned = ('' + user.phone).replace(/\D/g, '') // Clean number
+    const regex = /^(\d{3})(\d{3})(\d{4})$/;
+    const match = cleaned.match(regex)
+    if (match) {
+        number = '(' + match[1] + ') ' + match[2] + '-' + match[3];
+    }
+
+    // Format Birthday
+    const birthday = new Date(user.dob.date).toLocaleDateString();
+
+    // Create HTML with all values
+    const modalHTML = `<div class="modal-container" id="modal">
+                            <div class="modal">
+                                <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+                                <div class="modal-info-container">
+                                    <img class="modal-img" src="${user.picture.large}" alt="profile picture">
+                                    <h3 id="name" class="modal-name cap">${user.name.first} ${user.name.last}</h3>
+                                    <p class="modal-text">${user.email}</p>
+                                    <p class="modal-text cap">${user.location.city}</p>
+                                    <hr>
+                                    <p class="modal-text">${number}</p>
+                                    <p class="modal-text">${user.location.street.number} ${user.location.street.name}, ${user.location.state}, ${user.location.postcode}</p>
+                                    <p class="modal-text">Birthday: ${birthday}</p>
+                                </div>
+                            </div>
+                            <div class="modal-btn-container">
+                                <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+                                <button type="button" id="modal-next" class="modal-next btn">Next</button>
+                            </div>
+                        </div>`;
+    // Insert the HTML
+    body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Add listeners
+    // Close button listener
+    const closeButton = document.getElementById('modal-close-btn');
+    closeButton.addEventListener('click', event => removeModal());
+
+    // Switch button listeners
+    const prevButton = document.getElementById('modal-prev');
+    if(parseInt(currentUserId)===1) {
+        prevButton.style.display = 'none';
+    }
+    const nextButton = document.getElementById('modal-next');
+    if(parseInt(currentUserId)===userCount) {
+        nextButton.style.display = 'none';
+    }
+    prevButton.addEventListener('click', event => {
+
+    });
+    nextButton.addEventListener('click', event => {
+
+    });
+}
+
+/**
+ * removes the modal, if it is up
+ */
+function removeModal() {
+    const modal = document.getElementById('modal');
+    if(modal) {
+        modal.parentNode.removeChild(modal);
+    }
+}
 
 /**
  * Creates the usercards and appends them to the gallery
@@ -99,13 +140,14 @@ function createCards(userList) {
     // Loop through the list of users and create a card in the gallery for each of them
     // userList.forEach(user => gallery.insertAdjacentHTML('beforeend', createCardLiteral(user)));
     for(let i = 0; i<userList.length; i++) {
-        gallery.insertAdjacentHTML('beforeend', createCardLiteral(userList[i], i))
+        gallery.insertAdjacentHTML('beforeend', createCardLiteral(userList[i], i+1))
     }
 }
 
 /**
  * Creates a template literal for the Card with basic user information
  * @param user
+ * @param id
  */
 function createCardLiteral(user, id) {
     return `<div class="card" id="${id}">
@@ -136,7 +178,7 @@ function createSearch() {
             const searchString = event.target.value.toLowerCase();
             // If it does not match, hide the card
             if(name.includes(searchString)) {
-                card.style.display = 'block';
+                card.style.display = 'flex';
             }
             else {
                 card.style.display = 'none';
