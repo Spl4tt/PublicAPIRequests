@@ -48,8 +48,8 @@ Promise.all([
         }
         // Get a User from list
         const userId = element.id;
-        const user = userList[userId-1];
-        refreshModal(user, userId, userList.length);
+        //const user = userList[userId-1];
+        refreshModal(userList, userId, userList.length);
     }));
 
     // Create Search with all needed functionality
@@ -58,13 +58,14 @@ Promise.all([
 
 /**
  * Removes the modal, and refreshes it with new values
- * @param user
+ * @param userList
  * @param currentUserId
  * @param userCount
  */
-function refreshModal(user, currentUserId, userCount) {
+function refreshModal(userList, currentUserId, userCount) {
     removeModal();
 
+    const user = userList[currentUserId];
     // Format number to (555) 555-5555
     let number = user.cell;
     const cleaned = ('' + user.phone).replace(/\D/g, '') // Clean number
@@ -107,18 +108,18 @@ function refreshModal(user, currentUserId, userCount) {
 
     // Switch button listeners
     const prevButton = document.getElementById('modal-prev');
-    if(parseInt(currentUserId)===1) {
+    if(parseInt(currentUserId)===0) {
         prevButton.style.display = 'none';
     }
     const nextButton = document.getElementById('modal-next');
-    if(parseInt(currentUserId)===userCount) {
+    if(parseInt(currentUserId)===parseInt(userCount-1)) {
         nextButton.style.display = 'none';
     }
     prevButton.addEventListener('click', event => {
-
+        refreshModal(userList, parseInt(currentUserId-1), userCount);
     });
     nextButton.addEventListener('click', event => {
-
+        refreshModal(userList, parseInt(currentUserId+1), userCount);
     });
 }
 
@@ -140,7 +141,7 @@ function createCards(userList) {
     // Loop through the list of users and create a card in the gallery for each of them
     // userList.forEach(user => gallery.insertAdjacentHTML('beforeend', createCardLiteral(user)));
     for(let i = 0; i<userList.length; i++) {
-        gallery.insertAdjacentHTML('beforeend', createCardLiteral(userList[i], i+1))
+        gallery.insertAdjacentHTML('beforeend', createCardLiteral(userList[i], i))
     }
 }
 
