@@ -35,7 +35,6 @@ Promise.all([
 ])
 .then(data => {
     const userList = data[0].results;
-    console.log(userList); // TODO Remove
     createCards(userList);
 
     const cards = document.querySelectorAll('.card');
@@ -47,7 +46,7 @@ Promise.all([
             element = element.parentElement;
         }
         // Get a User from list
-        const userId = element.id;
+        const userId = parseInt(element.id);
         //const user = userList[userId-1];
         refreshModal(userList, userId, userList.length);
     }));
@@ -108,18 +107,19 @@ function refreshModal(userList, currentUserId, userCount) {
 
     // Switch button listeners
     const prevButton = document.getElementById('modal-prev');
-    if(parseInt(currentUserId)===0) {
+    if(currentUserId===0) {
         prevButton.style.display = 'none';
     }
     const nextButton = document.getElementById('modal-next');
-    if(parseInt(currentUserId)===parseInt(userCount-1)) {
+    if(currentUserId===userCount-1) {
         nextButton.style.display = 'none';
     }
     prevButton.addEventListener('click', event => {
-        refreshModal(userList, parseInt(currentUserId-1), userCount);
+        const newUserId = currentUserId-1;
+        refreshModal(userList, newUserId, userCount);
     });
     nextButton.addEventListener('click', event => {
-        refreshModal(userList, parseInt(currentUserId+1), userCount);
+        refreshModal(userList,currentUserId+1, userCount);
     });
 }
 
