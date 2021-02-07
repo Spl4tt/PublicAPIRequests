@@ -167,8 +167,7 @@ function createSearch() {
     const cards = document.querySelectorAll('.card');
     const searchDiv = document.querySelector('.search-container');
     const searchHTML = `<form action="#" method="get">
-                            <input type="search" id="search-input" className="search-input" placeholder="Search...">
-                            <input type="submit" value="&#x1F50D;" id="search-submit" className="search-submit">
+                            <input type="search" id="search-input" className="search-input" placeholder="Search..."
                         </form>`;
     searchDiv.insertAdjacentHTML('beforeend', searchHTML);
     const input = document.getElementById('search-input');
